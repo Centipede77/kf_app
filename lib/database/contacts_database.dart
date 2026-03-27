@@ -1,11 +1,12 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class ContactsDatabase {
-  static final ContactsDatabase instance = ContactsDatabase._init();
-  static Database? _database;
-
   ContactsDatabase._init();
+
+  static final ContactsDatabase instance = ContactsDatabase._init();
+
+  static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -24,19 +25,27 @@ class ContactsDatabase {
     );
   }
 
-  Future _createDB(Database db, int version) async {
+  Future<void> _createDB(Database db, int version) async {
     await db.execute('''
-CREATE TABLE contacts (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT NOT NULL,
-phone TEXT NOT NULL,
-email TEXT NOT NULL,
-photoPath TEXT,
-createdAt TEXT NOT NULL
-)
-''');
+      CREATE TABLE contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        photoPath TEXT,
+        createdAt TEXT NOT NULL
+      )
+    ''');
 
     await db.execute('CREATE INDEX idx_name ON contacts (name)');
     await db.execute('CREATE INDEX idx_phone ON contacts (phone)');
+  }
+
+  Future<void> close() async {
+    final db = _database;
+    if (db != null) {
+      await db.close();
+      _database = null;
+    }
   }
 }

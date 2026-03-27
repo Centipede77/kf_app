@@ -6,7 +6,7 @@ class Contact {
   final String? photoPath;
   final DateTime createdAt;
 
-  Contact({
+  const Contact({
     this.id,
     required this.name,
     required this.phone,
@@ -20,7 +20,7 @@ class Contact {
     String? name,
     String? phone,
     String? email,
-    String? photoPath,
+    Object? photoPath = _noPhotoPathValue,
     DateTime? createdAt,
   }) {
     return Contact(
@@ -28,7 +28,9 @@ class Contact {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       email: email ?? this.email,
-      photoPath: photoPath ?? this.photoPath,
+      photoPath: photoPath == _noPhotoPathValue
+          ? this.photoPath
+          : photoPath as String?,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -46,12 +48,14 @@ class Contact {
 
   factory Contact.fromMap(Map<String, dynamic> map) {
     return Contact(
-      id: map['id'],
-      name: map['name'],
-      phone: map['phone'],
-      email: map['email'],
-      photoPath: map['photoPath'],
-      createdAt: DateTime.parse(map['createdAt']),
+      id: map['id'] as int?,
+      name: map['name'] as String,
+      phone: map['phone'] as String,
+      email: map['email'] as String,
+      photoPath: map['photoPath'] as String?,
+      createdAt: DateTime.parse(map['createdAt'] as String),
     );
   }
 }
+
+const Object _noPhotoPathValue = Object();
